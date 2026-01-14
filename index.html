@@ -18,8 +18,9 @@
             align-items: center;
             background: linear-gradient(135deg, #ff758c, #ff7eb3, #ffa07a);
             font-family: 'Arial', sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
+            padding: 20px 0;
         }
 
         /* Animierte Herzen im Hintergrund */
@@ -82,6 +83,7 @@
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             animation: slideIn 0.6s ease-out;
+            margin-bottom: 20px;
         }
 
         @keyframes slideIn {
@@ -216,6 +218,15 @@
             }
         }
 
+        .date-details {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .date-details p {
+            margin-bottom: 15px;
+        }
+
         /* Music Control */
         .music-control {
             position: fixed;
@@ -288,6 +299,7 @@
         const yesBtn = document.getElementById("yes");
         const noBtn = document.getElementById("no");
         const mainBox = document.getElementById("mainBox");
+        const container = document.querySelector(".container");
         const musicControl = document.getElementById("musicControl");
         const musicStatus = document.getElementById("musicStatus");
 
@@ -319,6 +331,9 @@
 
         // "Ja" Button
         yesBtn.addEventListener("click", () => {
+            // Body overflow ändern für scrollbare Inhalte
+            document.body.style.overflow = 'auto';
+            
             mainBox.innerHTML = `
                 <div class="success-screen">
                     <div class="emoji-big">💕</div>
@@ -337,30 +352,13 @@
                 </div>
             `;
 
-            setTimeout(() => {
-                const dateDetailsBox = document.createElement('div');
-                dateDetailsBox.className = 'box';
-                dateDetailsBox.style.marginTop = '20px';
-                dateDetailsBox.innerHTML = `
-                    <h1>📅 Unser Date 📅</h1>
-                    <div style="text-align: left; margin: 20px 0;">
-                        <p><strong>🗓️ Wann:</strong> Valentinstag, 14. Februar 2026, 14:00 Uhr</p>
-                        <p><strong>📍 Wo:</strong> Ich hole dich ab! </p>
-                        <p><strong>✨ Was:</strong> Das bleibt noch eine Überraschung... aber wir gehen zusammen essen ❤️ </p>
-                    </div>
-                    <p style="margin-top: 20px; font-style: italic; color: #ff4d6d;">Freu dich drauf, Schatz! 💖</p>
-                `;
-                document.querySelector('.container').appendChild(dateDetailsBox);
-            }, 800);
-        };
-
             // YouTube Player erstellen
             setTimeout(() => {
                 if (window.YT && window.YT.Player) {
                     player = new YT.Player('player', {
                         height: '100%',
                         width: '100%',
-                        videoId: 'SR6iYWJxHqs', // Bruno Mars - Grenade
+                        videoId: 'SR6iYWJxHqs',
                         playerVars: {
                             'autoplay': 1,
                             'controls': 1,
@@ -373,6 +371,22 @@
                     });
                 }
             }, 500);
+
+            // Zusätzliche Box für Date-Details hinzufügen
+            setTimeout(() => {
+                const dateDetailsBox = document.createElement('div');
+                dateDetailsBox.className = 'box';
+                dateDetailsBox.innerHTML = `
+                    <h1>📅 Unser Date 📅</h1>
+                    <div class="date-details">
+                        <p><strong>🗓️ Wann:</strong> Valentinstag, 14. Februar 2026, 14:00 Uhr</p>
+                        <p><strong>📍 Wo:</strong> Ich hole dich ab!</p>
+                        <p><strong>✨ Was:</strong> Das bleibt noch eine Überraschung... aber wir gehen zusammen essen ❤️</p>
+                    </div>
+                    <p style="margin-top: 20px; font-style: italic; color: #ff4d6d;">Freu dich drauf, Schatz! 💖</p>
+                `;
+                container.appendChild(dateDetailsBox);
+            }, 800);
 
             // Mehr Herzen bei Erfolg
             for (let i = 0; i < 20; i++) {
@@ -432,34 +446,6 @@
                 }
             }
         });
-
-        // =====================================================
-        // ANLEITUNG ZUM ANPASSEN:
-        // =====================================================
-        // 
-        // MUSIK ÄNDERN (YouTube):
-        // 1. Gehe zu deinem YouTube-Video
-        // 2. Kopiere die Video-ID aus der URL
-        //    z.B. bei youtube.com/watch?v=SR6iYWJxHqs
-        //    ist "SR6iYWJxHqs" die Video-ID
-        // 3. Ersetze in Zeile 347: videoId: 'SR6iYWJxHqs'
-        //    mit deiner Video-ID
-        //
-        // FOTO HINZUFÜGEN:
-        // 1. Lade dein Foto auf Imgur hoch
-        // 2. RECHTSKLICK auf das Bild → "Bildadresse kopieren"
-        // 3. Der Link sollte so aussehen: https://i.imgur.com/XXXXXXX.jpg
-        // 4. Ersetze in Zeile 337 die URL
-        //
-        // TEXTE ÄNDERN:
-        // - Zeile 268-269: Hauptfrage und Untertitel
-        // - Zeile 333-334: Success-Screen Überschrift
-        // - Zeile 335: Text unter Überschrift
-        // - Zeile 345: Schlusstext
-        //
-        // =====================================================
     </script>
 </body>
 </html>
-
-
