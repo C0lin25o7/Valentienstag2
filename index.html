@@ -155,7 +155,6 @@
 
         /* Success Screen */
         .success-screen {
-            display: none;
             animation: fadeIn 0.8s ease-out;
         }
 
@@ -181,6 +180,25 @@
             width: 100%;
             height: auto;
             display: block;
+        }
+
+        .video-container {
+            margin: 25px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         .emoji-big {
@@ -266,20 +284,21 @@
         <span id="musicStatus">Musik pausiert</span>
     </div>
 
-    <audio id="bgMusic" loop>
-        <!-- Hier kannst du deine Musik-URL einfügen -->
-        <<source src="Bruno Mars - Grenade (Lyrics).mp3" type="audio/mpeg">
-    </audio>
-
     <script>
         const yesBtn = document.getElementById("yes");
         const noBtn = document.getElementById("no");
         const mainBox = document.getElementById("mainBox");
-        const bgMusic = document.getElementById("bgMusic");
         const musicControl = document.getElementById("musicControl");
         const musicStatus = document.getElementById("musicStatus");
 
         let musicPlaying = false;
+        let player;
+
+        // YouTube API laden
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         // Herzen im Hintergrund erstellen
         function createHeart() {
@@ -300,14 +319,6 @@
 
         // "Ja" Button
         yesBtn.addEventListener("click", () => {
-            // Musik starten
-            if (bgMusic.src) {
-                bgMusic.play().catch(e => console.log("Musik konnte nicht abgespielt werden"));
-                musicPlaying = true;
-                musicControl.style.display = "flex";
-                musicStatus.textContent = "Musik läuft";
-            }
-
             mainBox.innerHTML = `
                 <div class="success-screen">
                     <div class="emoji-big">💕</div>
@@ -315,18 +326,61 @@
                     <p>Ich freu mich riesig auf dich! 😘</p>
                     
                     <div class="photo-container">
-                        <img src=https://imgur.com/a/Dzh27Yh alt="Unser Foto">
+                        <img src="https://i.imgur.com/677QhVc.jpeg" alt="Unser Foto">
+                    </div>
+                    
+                    <div class="video-container">
+                        <div id="player"></div>
                     </div>
                     
                     <p>Ich liebe dich! ❤️</p>
                 </div>
             `;
 
+            // YouTube Player erstellen
+            setTimeout(() => {
+                if (window.YT && window.YT.Player) {
+                    player = new YT.Player('player', {
+                        height: '100%',
+                        width: '100%',
+                        videoId: 'SR6iYWJxHqs', // Bruno Mars - Grenade
+                        playerVars: {
+                            'autoplay': 1,
+                            'controls': 1,
+                            'rel': 0
+                        },
+                        events: {
+                            'onReady': onPlayerReady,
+                            'onStateChange': onPlayerStateChange
+                        }
+                    });
+                }
+            }, 500);
+
             // Mehr Herzen bei Erfolg
             for (let i = 0; i < 20; i++) {
                 setTimeout(createHeart, i * 100);
             }
+
+            // Music Control anzeigen
+            musicControl.style.display = "flex";
+            musicStatus.textContent = "Musik läuft";
+            musicPlaying = true;
         });
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                musicPlaying = true;
+                musicStatus.textContent = "Musik läuft";
+            } else if (event.data == YT.PlayerState.PAUSED) {
+                musicPlaying = false;
+                musicStatus.textContent = "Musik pausiert";
+            }
+        }
 
         // "Nein" Button - springt weg
         noBtn.addEventListener("mouseover", moveNoButton);
@@ -349,14 +403,16 @@
 
         // Musik Control
         musicControl.addEventListener("click", () => {
-            if (musicPlaying) {
-                bgMusic.pause();
-                musicStatus.textContent = "Musik pausiert";
-                musicPlaying = false;
-            } else {
-                bgMusic.play();
-                musicStatus.textContent = "Musik läuft";
-                musicPlaying = true;
+            if (player) {
+                if (musicPlaying) {
+                    player.pauseVideo();
+                    musicStatus.textContent = "Musik pausiert";
+                    musicPlaying = false;
+                } else {
+                    player.playVideo();
+                    musicStatus.textContent = "Musik läuft";
+                    musicPlaying = true;
+                }
             }
         });
 
@@ -364,26 +420,27 @@
         // ANLEITUNG ZUM ANPASSEN:
         // =====================================================
         // 
-        // MUSIK HINZUFÜGEN:
-        // 1. Lade deine Musik-Datei hoch (z.B. zu einem File-Hosting)
-        // 2. Ersetze in Zeile 241: <source src="DEINE_MUSIK_URL.mp3"...
-        //    mit deiner echten URL
+        // MUSIK ÄNDERN (YouTube):
+        // 1. Gehe zu deinem YouTube-Video
+        // 2. Kopiere die Video-ID aus der URL
+        //    z.B. bei youtube.com/watch?v=SR6iYWJxHqs
+        //    ist "SR6iYWJxHqs" die Video-ID
+        // 3. Ersetze in Zeile 347: videoId: 'SR6iYWJxHqs'
+        //    mit deiner Video-ID
         //
         // FOTO HINZUFÜGEN:
-        // 1. Lade dein Foto hoch
-        // 2. Ersetze in Zeile 311 die URL:
-        //    src="https://via.placeholder.com..." 
-        //    mit deiner Foto-URL
+        // 1. Lade dein Foto auf Imgur hoch
+        // 2. RECHTSKLICK auf das Bild → "Bildadresse kopieren"
+        // 3. Der Link sollte so aussehen: https://i.imgur.com/XXXXXXX.jpg
+        // 4. Ersetze in Zeile 337 die URL
         //
         // TEXTE ÄNDERN:
-        // - Zeile 268: Hauptfrage ändern
-        // - Zeile 269: Untertitel ändern
-        // - Zeile 301-305: Success-Screen Texte ändern
+        // - Zeile 268-269: Hauptfrage und Untertitel
+        // - Zeile 333-334: Success-Screen Überschrift
+        // - Zeile 335: Text unter Überschrift
+        // - Zeile 345: Schlusstext
         //
         // =====================================================
     </script>
 </body>
-
 </html>
-
-
