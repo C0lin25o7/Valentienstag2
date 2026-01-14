@@ -337,6 +337,23 @@
                 </div>
             `;
 
+            setTimeout(() => {
+                const dateDetailsBox = document.createElement('div');
+                dateDetailsBox.className = 'box';
+                dateDetailsBox.style.marginTop = '20px';
+                dateDetailsBox.innerHTML = `
+                    <h1>📅 Unser Date 📅</h1>
+                    <div style="text-align: left; margin: 20px 0;">
+                        <p><strong>🗓️ Wann:</strong> Valentinstag, 14. Februar 2026, 14:00 Uhr</p>
+                        <p><strong>📍 Wo:</strong> Ich hole dich ab! </p>
+                        <p><strong>✨ Was:</strong> Das bleibt noch eine Überraschung... aber wir gehen zusammen essen ❤️ </p>
+                    </div>
+                    <p style="margin-top: 20px; font-style: italic; color: #ff4d6d;">Freu dich drauf, Schatz! 💖</p>
+                `;
+                document.querySelector('.container').appendChild(dateDetailsBox);
+            }, 800);
+        };
+
             // YouTube Player erstellen
             setTimeout(() => {
                 if (window.YT && window.YT.Player) {
@@ -444,4 +461,5 @@
     </script>
 </body>
 </html>
+
 
